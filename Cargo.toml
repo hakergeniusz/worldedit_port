@@ -1,0 +1,16 @@
+[package]
+name = "horizon-worldedit"
+version = "1.2.1"
+edition = "2024"
+license = "MIT"
+description = "WorldEdit as a Horizon native mod, ported to the 2ebf00a pin. A migration of XnotCykoX's WorldEdit-Horizon."
+publish = false
+
+# The schematics-folder module doubles as the mod's library (its tests): it is
+# the one bundle file that touches no game state. The other files compile only
+# inside the game, where they see `Game`'s private fields and methods.
+[lib]
+path = "mixins/worldedit/schem-paths.rs"
+
+[dependencies]
+log = "0.4"
