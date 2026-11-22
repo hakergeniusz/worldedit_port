@@ -374,16 +374,11 @@ fn worldedit_command(
         stack.data_mut().custom_name = Some(Tag::String(worldedit::WAND_NAME.into()));
         stack
     }
-    /// Whether `stack` is the wand `//wand` handed out.
+    /// Whether `stack` is the wand `//wand` handed out. The name is the
+    /// plain text of the custom name, through the game's own derivation, so
+    /// any shape the component is kept in reads the same.
     fn is_the_wand(stack: &ItemStack) -> bool {
-        let name = stack
-            .data()
-            .and_then(|data| data.custom_name.as_ref())
-            .and_then(|tag| match tag {
-                Tag::String(value) => Some(value.to_string_lossy()),
-                _ => None,
-            });
-        worldedit::is_wand(&stack.item, name.as_deref())
+        worldedit::is_wand(&stack.item, stack.custom_name().as_deref())
     }
     /// `//wand`: the wooden axe, into the inventory.
     fn give_wand(game: &mut crate::game::Game<'_>) -> bool {

@@ -2,7 +2,9 @@
 // mining or using an item: left click with the wooden axe `//wand` gave sets
 // position 1, right click position 2, each at the block under the crosshair.
 // The click is taken — no mining, no item use — and any other wooden axe
-// stays an ordinary axe.
+// stays an ordinary axe. The wand is known by the plain text of its custom
+// name, read through the game's own derivation, so any shape the component
+// is kept in (a bare string or a styled component) reads the same.
 // Copyright (c) 2026 hakergeniusz. MIT.
 fn worldedit_wand(
     game: &mut crate::game::Game<'_>,
@@ -11,15 +13,7 @@ fn worldedit_wand(
 ) -> core::ops::ControlFlow<Result<()>> {
     /// The wand's mark on the held stack: the name `//wand` gives it.
     fn is_the_wand(stack: &horizon_client::items::ItemStack) -> bool {
-        use horizon_core::nbt::Tag;
-        let name = stack
-            .data()
-            .and_then(|data| data.custom_name.as_ref())
-            .and_then(|tag| match tag {
-                Tag::String(value) => Some(value.to_string_lossy()),
-                _ => None,
-            });
-        worldedit::is_wand(&stack.item, name.as_deref())
+        worldedit::is_wand(&stack.item, stack.custom_name().as_deref())
     }
     /// Whether the held stack is the wand `//wand` gave.
     fn holding(game: &crate::game::Game<'_>) -> bool {
