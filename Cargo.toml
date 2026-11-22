@@ -1,16 +1,17 @@
 [package]
-name = "horizon-worldedit"
-version = "1.2.1"
+name = "worldedit_port"
+version = "1.3.0"
 edition = "2024"
 license = "MIT"
-description = "WorldEdit as a Horizon native mod, ported to the 2ebf00a pin. A migration of XnotCykoX's WorldEdit-Horizon."
+description = "WorldEdit for Horizon: an in-game block editor with the wooden-axe wand, regions, shapes, schematics and a schematics menu, driven by // commands."
 publish = false
 
-# The schematics-folder module doubles as the mod's library (its tests): it is
-# the one bundle file that touches no game state. The other files compile only
-# inside the game, where they see `Game`'s private fields and methods.
+# The launcher's staged build calls this crate's brain by its library name;
+# the helpers reach it as `worldedit::`.
 [lib]
-path = "mixins/worldedit/schem-paths.rs"
+name = "worldedit"
 
 [dependencies]
+# The pinned SDK's API crate; the launcher stages its own copy of the same build.
+horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
 log = "0.4"

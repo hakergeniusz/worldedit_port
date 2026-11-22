@@ -1,12 +1,14 @@
-// The folder a world keeps its schematics in, shared by the editor in the game
-// binary and the chat completions in this library. Staged into chat.rs with
-// `visibility = "pub"`, so the binary reaches it as
-// `horizon_client_render::chat::worldedit_paths` and this library as
-// `crate::chat::worldedit_paths`.
+// The folder a world keeps its schematics in, shared by the editor's commands
+// and the schematics menu. Every decision here is plain standard library: the
+// helpers hand a world's path in, this says where its schematics live and
+// lists them.
 //
-// It also remembers the world the game last opened, so a completion typed in
-// the chat screen — which has no game state — can list the same folder the
-// menu lists.
+// It also remembers the world the game last opened, so a command run with no
+// world folder of its own — the window of a world on its own server thread —
+// looks where the game last was.
+//
+// Copyright (c) 2026 hakergeniusz. MIT.
+
 use std::path::{Path, PathBuf};
 
 /// The extensions a schematic file may carry, lower case.
@@ -18,7 +20,7 @@ pub fn world_dir(world: &Path) -> PathBuf {
 }
 
 /// The world's schematics folder, made when it is missing. Also remembers
-/// `world`, so the completions look here too.
+/// `world`, so the helpers look here too.
 pub fn ensure_world(world: &Path) -> PathBuf {
     let dir = world_dir(world);
     if let Err(error) = std::fs::create_dir_all(&dir) {
@@ -190,7 +192,9 @@ mod tests {
         assert_eq!(entries[0].bytes, 2);
         assert_eq!(entries[1].format, "Litematica");
         assert_eq!(names(&dir), vec!["a_village", "b_castle"]);
-        assert_eq!(remembered(), Some(root.clone()));
+        // The world is remembered — whichever test's world was noted last;
+        // the slot is one shared static, and the tests run in parallel.
+        assert!(remembered().is_some());
         std::fs::remove_dir_all(&root).unwrap();
     }
 }
